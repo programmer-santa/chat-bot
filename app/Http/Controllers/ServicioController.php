@@ -48,7 +48,7 @@ class ServicioController extends Controller
             'descripcion' => ['nullable', 'string'],
             'duracion' => ['required', 'integer', 'min:1'],
             'precio' => ['required', 'numeric', 'min:0'],
-            'activo' => ['boolean'],
+            'activo' => ['nullable', 'in:0,1'],
         ]);
 
         Servicio::create([
@@ -56,7 +56,7 @@ class ServicioController extends Controller
             'descripcion' => $validated['descripcion'] ?? null,
             'duracion' => $validated['duracion'],
             'precio' => $validated['precio'],
-            'activo' => $validated['activo'] ?? true,
+            'activo' => isset($validated['activo']) ? (bool) $validated['activo'] : true,
         ]);
 
         return redirect()->route('admin.servicios.index')
@@ -66,32 +66,36 @@ class ServicioController extends Controller
     /**
      * Mostrar detalles de un servicio
      */
-    public function show(Servicio $servicio)
+    public function show($id)
     {
-        $servicio->load('turnos');
+        $servicio = Servicio::findOrFail($id);
+        $servicio->load(['turnos.user', 'turnos.barbero']);
         return view('admin.servicios.show', compact('servicio'));
     }
 
     /**
      * Mostrar formulario para editar servicio
      */
-    public function edit(Servicio $servicio)
+    public function edit($id)
     {
+        $servicio = Servicio::findOrFail($id);
         return view('admin.servicios.edit', compact('servicio'));
     }
 
     /**
      * Actualizar servicio
      */
-    public function update(Request $request, Servicio $servicio)
+    public function update(Request $request, $id)
     {
+        $servicio = Servicio::findOrFail($id);
+        
         // Validación
         $validated = $request->validate([
             'nombre' => ['required', 'string', 'max:255'],
             'descripcion' => ['nullable', 'string'],
             'duracion' => ['required', 'integer', 'min:1'],
             'precio' => ['required', 'numeric', 'min:0'],
-            'activo' => ['boolean'],
+            'activo' => ['nullable', 'in:0,1'],
         ]);
 
         $servicio->update([
@@ -99,7 +103,7 @@ class ServicioController extends Controller
             'descripcion' => $validated['descripcion'] ?? null,
             'duracion' => $validated['duracion'],
             'precio' => $validated['precio'],
-            'activo' => $validated['activo'] ?? true,
+            'activo' => isset($validated['activo']) ? (bool) $validated['activo'] : true,
         ]);
 
         return redirect()->route('admin.servicios.index')
@@ -109,8 +113,10 @@ class ServicioController extends Controller
     /**
      * Eliminar servicio
      */
-    public function destroy(Servicio $servicio)
+    public function destroy($id)
     {
+        $servicio = Servicio::findOrFail($id);
+        
         // Verificar si tiene turnos asociados
         if ($servicio->turnos()->count() > 0) {
             return redirect()->route('admin.servicios.index')

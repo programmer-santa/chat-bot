@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarberoController;
+use App\Http\Controllers\ServicioController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,4 +39,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // CRUD de Barberos
     Route::resource('barberos', BarberoController::class);
+    
+    // CRUD de Servicios
+    Route::resource('servicios', ServicioController::class);
 });
