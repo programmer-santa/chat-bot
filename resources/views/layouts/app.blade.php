@@ -17,7 +17,7 @@
     @auth
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('barbero.dashboard') }}">
+                <a class="navbar-brand" href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : '#' }}">
                     <i class="bi bi-scissors"></i> Sistema Barbería
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -31,6 +31,8 @@
                                     <i class="bi bi-speedometer2"></i> Dashboard
                                 </a>
                             </li>
+                            {{-- Enlaces comentados hasta que se implementen las rutas --}}
+                            {{-- 
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.barberos.index') }}">
                                     <i class="bi bi-people"></i> Barberos
@@ -46,7 +48,10 @@
                                     <i class="bi bi-calendar-check"></i> Turnos
                                 </a>
                             </li>
+                            --}}
                         @else
+                            {{-- Enlaces comentados hasta que se implementen las rutas de barbero --}}
+                            {{--
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('barbero.dashboard') }}">
                                     <i class="bi bi-speedometer2"></i> Dashboard
@@ -57,6 +62,7 @@
                                     <i class="bi bi-calendar-check"></i> Mis Turnos
                                 </a>
                             </li>
+                            --}}
                         @endif
                     </ul>
                     <ul class="navbar-nav">
