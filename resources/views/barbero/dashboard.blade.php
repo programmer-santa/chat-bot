@@ -10,18 +10,14 @@
     </div>
 </div>
 
-@php
-    $barbero = auth()->user()->barbero;
-    $turnos = $barbero ? $barbero->turnos()->with(['user', 'servicio'])->latest()->get() : collect();
-@endphp
-
 @if($barbero)
+    <!-- Estadísticas -->
     <div class="row mb-4">
         <div class="col-md-4">
             <div class="card text-white bg-primary">
                 <div class="card-body">
                     <h5 class="card-title">Total Turnos</h5>
-                    <h3>{{ $turnos->count() }}</h3>
+                    <h3>{{ $stats['total'] }}</h3>
                 </div>
             </div>
         </div>
@@ -30,7 +26,7 @@
             <div class="card text-white bg-warning">
                 <div class="card-body">
                     <h5 class="card-title">Pendientes</h5>
-                    <h3>{{ $turnos->where('estado', 'pendiente')->count() }}</h3>
+                    <h3>{{ $stats['pendientes'] }}</h3>
                 </div>
             </div>
         </div>
@@ -39,20 +35,18 @@
             <div class="card text-white bg-success">
                 <div class="card-body">
                     <h5 class="card-title">Aceptados</h5>
-                    <h3>{{ $turnos->where('estado', 'aceptado')->count() }}</h3>
+                    <h3>{{ $stats['aceptados'] }}</h3>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Listado de Turnos -->
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header">
                     <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Mis Turnos</h5>
-                    <a href="{{ route('barbero.turnos.index') }}" class="btn btn-sm btn-outline-primary">
-                        Ver Todos
-                    </a>
                 </div>
                 <div class="card-body">
                     @if($turnos->count() > 0)
@@ -65,11 +59,10 @@
                                         <th>Fecha</th>
                                         <th>Hora</th>
                                         <th>Estado</th>
-                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($turnos->take(10) as $turno)
+                                    @foreach($turnos as $turno)
                                         <tr>
                                             <td>{{ $turno->user->name }}</td>
                                             <td>{{ $turno->servicio->nombre }}</td>
@@ -82,28 +75,6 @@
                                                     <span class="badge bg-success">Aceptado</span>
                                                 @else
                                                     <span class="badge bg-danger">Rechazado</span>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                @if($turno->estado === 'pendiente')
-                                                    <form action="{{ route('barbero.turnos.cambiar-estado', $turno) }}" 
-                                                          method="POST" 
-                                                          class="d-inline">
-                                                        @csrf
-                                                        <input type="hidden" name="estado" value="aceptado">
-                                                        <button type="submit" class="btn btn-sm btn-success">
-                                                            <i class="bi bi-check-circle"></i>
-                                                        </button>
-                                                    </form>
-                                                    <form action="{{ route('barbero.turnos.cambiar-estado', $turno) }}" 
-                                                          method="POST" 
-                                                          class="d-inline">
-                                                        @csrf
-                                                        <input type="hidden" name="estado" value="rechazado">
-                                                        <button type="submit" class="btn btn-sm btn-danger">
-                                                            <i class="bi bi-x-circle"></i>
-                                                        </button>
-                                                    </form>
                                                 @endif
                                             </td>
                                         </tr>
