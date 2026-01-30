@@ -25,12 +25,14 @@ class TurnoController extends Controller
 
     /**
      * Mostrar lista de turnos
-     * Admin ve todos, barbero ve solo los suyos
+     * Para admin: muestra todos los turnos
+     * Para barbero: muestra solo sus turnos
      */
     public function index()
     {
         $user = auth()->user();
 
+        // Si es admin, mostrar todos los turnos
         if ($user->isAdmin()) {
             $turnos = Turno::with(['user', 'barbero', 'servicio'])
                 ->latest()

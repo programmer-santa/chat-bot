@@ -31,8 +31,6 @@
                                     <i class="bi bi-speedometer2"></i> Dashboard
                                 </a>
                             </li>
-                            {{-- Enlaces comentados hasta que se implementen las rutas --}}
-                            {{-- 
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('admin.barberos.index') }}">
                                     <i class="bi bi-people"></i> Barberos
@@ -48,7 +46,6 @@
                                     <i class="bi bi-calendar-check"></i> Turnos
                                 </a>
                             </li>
-                            --}}
                         @else
                             {{-- Enlaces comentados hasta que se implementen las rutas de barbero --}}
                             {{--

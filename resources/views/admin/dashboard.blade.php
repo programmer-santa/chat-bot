@@ -34,7 +34,7 @@
                                 <p class="card-text text-muted">
                                     Administra los barberos del sistema
                                 </p>
-                                <a href="#" class="btn btn-primary">
+                                <a href="{{ route('admin.barberos.index') }}" class="btn btn-primary">
                                     <i class="bi bi-box-arrow-in-right"></i> Acceder
                                 </a>
                             </div>
@@ -66,7 +66,7 @@
                                 <p class="card-text text-muted">
                                     Administra los turnos y citas
                                 </p>
-                                <a href="#" class="btn btn-info">
+                                <a href="{{ route('admin.turnos.index') }}" class="btn btn-info">
                                     <i class="bi bi-box-arrow-in-right"></i> Acceder
                                 </a>
                             </div>

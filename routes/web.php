@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarberoController;
 use App\Http\Controllers\ServicioController;
+use App\Http\Controllers\TurnoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,4 +43,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // CRUD de Servicios
     Route::resource('servicios', ServicioController::class);
+    
+    // Listado de Turnos (solo lectura para admin)
+    Route::get('/turnos', [TurnoController::class, 'index'])->name('turnos.index');
 });
