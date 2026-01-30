@@ -52,7 +52,7 @@ class BarberoController extends Controller
             'nombre' => ['required', 'string', 'max:255'],
             'telefono' => ['nullable', 'string', 'max:20'],
             'especialidad' => ['nullable', 'string', 'max:255'],
-            'activo' => ['boolean'],
+            'activo' => ['nullable', 'in:0,1'],
         ]);
 
         // Crear usuario
@@ -69,7 +69,7 @@ class BarberoController extends Controller
             'nombre' => $validated['nombre'],
             'telefono' => $validated['telefono'] ?? null,
             'especialidad' => $validated['especialidad'] ?? null,
-            'activo' => $validated['activo'] ?? true,
+            'activo' => isset($validated['activo']) ? (bool) $validated['activo'] : true,
         ]);
 
         return redirect()->route('admin.barberos.index')
@@ -113,7 +113,7 @@ class BarberoController extends Controller
             'nombre' => ['required', 'string', 'max:255'],
             'telefono' => ['nullable', 'string', 'max:20'],
             'especialidad' => ['nullable', 'string', 'max:255'],
-            'activo' => ['boolean'],
+            'activo' => ['nullable', 'in:0,1'],
         ]);
 
         // Actualizar usuario
@@ -133,7 +133,7 @@ class BarberoController extends Controller
             'nombre' => $validated['nombre'],
             'telefono' => $validated['telefono'] ?? null,
             'especialidad' => $validated['especialidad'] ?? null,
-            'activo' => $validated['activo'] ?? true,
+            'activo' => isset($validated['activo']) ? (bool) $validated['activo'] : true,
         ]);
 
         return redirect()->route('admin.barberos.index')
