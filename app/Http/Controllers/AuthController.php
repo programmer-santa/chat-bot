@@ -24,6 +24,7 @@ class AuthController extends Controller
 
     /**
      * Procesar el login
+     * Solo permite acceso a usuarios administradores
      */
     public function login(Request $request)
     {
@@ -39,16 +40,20 @@ class AuthController extends Controller
 
             $user = Auth::user();
 
-            // Redirigir según el rol
+            // Solo permitir acceso a administradores
             if ($user->isAdmin()) {
                 return redirect()->route('admin.dashboard')
                     ->with('success', 'Bienvenido, ' . $user->name);
-            } elseif ($user->isBarbero()) {
-                return redirect()->route('barbero.dashboard')
-                    ->with('success', 'Bienvenido, ' . $user->name);
             }
 
-            return redirect()->intended('/home');
+            // Si no es admin, cerrar sesión y denegar acceso
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            throw ValidationException::withMessages([
+                'email' => ['No tienes permisos para acceder al sistema. Solo administradores.'],
+            ]);
         }
 
         // Si falla la autenticación

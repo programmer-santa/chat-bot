@@ -1,17 +1,39 @@
-/node_modules
-/public/hot
-/public/storage
+# ---- Laravel ----
+/vendor/
+/node_modules/
+
+/.env
+.env.*
+!.env.example
+
 /storage/*.key
-/vendor
-.env
-.env.backup
-.env.production
+/storage/framework/*
+/storage/logs/*
+
+/bootstrap/cache/*.php
+
+/public/storage
+/public/hot
+
+# ---- Testing ----
 .phpunit.result.cache
-Homestead.json
-Homestead.yaml
-auth.json
+
+# ---- Logs ----
 npm-debug.log
 yarn-error.log
-/.fleet
-/.idea
-/.vscode
+
+# ---- Auth / Deploy ----
+auth.json
+
+# ---- IDEs / Editors ----
+/.vscode/
+/.idea/
+/.fleet/
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+
+# ---- Homestead ----
+Homestead.json
+Homestead.yaml
