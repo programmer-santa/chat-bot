@@ -59,17 +59,18 @@ class ClienteController extends Controller
             'hora' => ['required'],
         ]);
 
-        // Verificar disponibilidad del barbero
+        // Verificar disponibilidad del horario
+        // No permitir crear turno si ya existe uno con mismo barbero, fecha, hora y estado pendiente o aceptado
         $existeTurno = Turno::where('barbero_id', $validated['barbero_id'])
             ->where('fecha', $validated['fecha'])
             ->where('hora', $validated['hora'])
-            ->where('estado', '!=', 'rechazado')
+            ->whereIn('estado', ['pendiente', 'aceptado'])
             ->exists();
 
         if ($existeTurno) {
             return back()
                 ->withInput()
-                ->with('error', 'El barbero ya tiene un turno en esa fecha y hora. Por favor, selecciona otra fecha u hora.');
+                ->with('error', 'El horario seleccionado no está disponible. Por favor elige otro.');
         }
 
         // Preparar observaciones con el nombre del cliente
