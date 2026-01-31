@@ -361,7 +361,10 @@
                                            id="telefono_cliente" 
                                            name="telefono_cliente" 
                                            value="{{ old('telefono_cliente') }}"
-                                           placeholder="+57 300 123 4567">
+                                           placeholder="+57 300 123 4567"
+                                           maxlength="20"
+                                           pattern="[\+]?[0-9\s\-\(\)]{10,20}"
+                                           oninput="formatearTelefono(this)">
                                     <div class="form-text">
                                         <small class="text-muted">
                                             <i class="bi bi-info-circle"></i> 
@@ -545,6 +548,134 @@
             const tieneMensajes = document.querySelector('.alert-success, .alert-danger, .alert-info');
             if (tieneMensajes) {
                 mostrarFormulario();
+            }
+        });
+        
+        // Función para formatear automáticamente el número de teléfono
+        function formatearTelefono(input) {
+            let valor = input.value;
+            
+            // Remover todo excepto números y el signo +
+            let soloNumeros = valor.replace(/[^\d+]/g, '');
+            
+            // Si empieza con +, mantenerlo
+            let tieneMas = soloNumeros.startsWith('+');
+            let numeros = soloNumeros.replace(/\+/g, '');
+            
+            // Si tiene más de 2 dígitos y no empieza con 57, asumir que es colombiano
+            if (numeros.length > 2 && !numeros.startsWith('57')) {
+                // Si tiene 10 dígitos y empieza con 3, agregar 57
+                if (numeros.length === 10 && numeros.startsWith('3')) {
+                    numeros = '57' + numeros;
+                }
+            }
+            
+            // Formatear: +57 XXX XXX XXXX
+            let formateado = '';
+            if (tieneMas || numeros.startsWith('57')) {
+                formateado = '+';
+            }
+            
+            if (numeros.startsWith('57')) {
+                formateado += '57';
+                numeros = numeros.substring(2);
+            }
+            
+            // Formatear el resto del número
+            if (numeros.length > 0) {
+                if (formateado.length > 0) {
+                    formateado += ' ';
+                }
+                
+                // Formatear como: XXX XXX XXXX
+                if (numeros.length <= 3) {
+                    formateado += numeros;
+                } else if (numeros.length <= 6) {
+                    formateado += numeros.substring(0, 3) + ' ' + numeros.substring(3);
+                } else {
+                    formateado += numeros.substring(0, 3) + ' ' + 
+                                  numeros.substring(3, 6) + ' ' + 
+                                  numeros.substring(6, 10);
+                }
+            }
+            
+            // Actualizar el valor del input
+            input.value = formateado;
+            
+            // Validar en tiempo real
+            validarTelefono(input);
+        }
+        
+        // Función para validar el teléfono en tiempo real
+        function validarTelefono(input) {
+            let valor = input.value;
+            let soloNumeros = valor.replace(/[^\d]/g, '');
+            
+            // Remover clases de validación anteriores
+            input.classList.remove('is-valid', 'is-invalid');
+            
+            // Si está vacío, no validar (es opcional)
+            if (valor.trim() === '') {
+                return;
+            }
+            
+            // Validar que tenga al menos 10 dígitos
+            if (soloNumeros.length < 10) {
+                input.classList.add('is-invalid');
+                mostrarMensajeError(input, 'El teléfono debe tener al menos 10 dígitos');
+                return;
+            }
+            
+            // Validar que no tenga más de 15 dígitos
+            if (soloNumeros.length > 15) {
+                input.classList.add('is-invalid');
+                mostrarMensajeError(input, 'El teléfono no puede tener más de 15 dígitos');
+                return;
+            }
+            
+            // Si pasa todas las validaciones
+            input.classList.add('is-valid');
+            ocultarMensajeError(input);
+        }
+        
+        // Función para mostrar mensaje de error personalizado
+        function mostrarMensajeError(input, mensaje) {
+            // Remover mensaje anterior si existe
+            ocultarMensajeError(input);
+            
+            // Crear elemento de mensaje
+            let errorDiv = document.createElement('div');
+            errorDiv.className = 'invalid-feedback d-block';
+            errorDiv.innerHTML = '<i class="bi bi-exclamation-triangle"></i> ' + mensaje;
+            errorDiv.id = input.id + '_error';
+            
+            // Insertar después del input
+            input.parentNode.insertBefore(errorDiv, input.nextSibling);
+        }
+        
+        // Función para ocultar mensaje de error
+        function ocultarMensajeError(input) {
+            let errorDiv = document.getElementById(input.id + '_error');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        }
+        
+        // Validar al enviar el formulario
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form[action*="turnos/solicitar"]');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const telefonoInput = document.getElementById('telefono_cliente');
+                    if (telefonoInput && telefonoInput.value.trim() !== '') {
+                        validarTelefono(telefonoInput);
+                        if (telefonoInput.classList.contains('is-invalid')) {
+                            e.preventDefault();
+                            telefonoInput.focus();
+                            return false;
+                        }
+                    }
+                });
             }
         });
     </script>

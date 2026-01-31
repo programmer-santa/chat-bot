@@ -61,10 +61,33 @@ class ClienteController extends Controller
                 'nullable', 
                 'string', 
                 'max:20',
-                'regex:/^[\+]?[0-9\s\-\(\)]{10,20}$/', // Acepta números con código de país, espacios, guiones, paréntesis
+                function ($attribute, $value, $fail) {
+                    if (empty($value)) {
+                        return; // Es opcional, si está vacío no validar
+                    }
+                    
+                    // Limpiar el número para validar
+                    $numeroLimpio = preg_replace('/[^0-9]/', '', $value);
+                    
+                    // Validar que tenga al menos 10 dígitos (número colombiano mínimo)
+                    if (strlen($numeroLimpio) < 10) {
+                        $fail('El teléfono debe tener al menos 10 dígitos. Ejemplo: +57 300 123 4567');
+                        return;
+                    }
+                    
+                    // Validar que no tenga más de 15 dígitos (máximo internacional)
+                    if (strlen($numeroLimpio) > 15) {
+                        $fail('El teléfono no puede tener más de 15 dígitos.');
+                        return;
+                    }
+                    
+                    // Validar formato básico (solo números, espacios, guiones, paréntesis y +)
+                    if (!preg_match('/^[\+]?[0-9\s\-\(\)]+$/', $value)) {
+                        $fail('El teléfono solo puede contener números, espacios, guiones, paréntesis y el signo +. Ejemplo: +57 300 123 4567');
+                        return;
+                    }
+                },
             ],
-        ], [
-            'telefono_cliente.regex' => 'El formato del teléfono no es válido. Use: +57 300 123 4567, 573001234567 o 300 123 4567',
         ]);
 
         // Verificar disponibilidad del horario
