@@ -81,12 +81,20 @@
                 </div>
 
                 <div class="col-md-6 mb-3">
-                    <label for="telefono" class="form-label">Teléfono</label>
+                    <label for="telefono" class="form-label">
+                        <i class="bi bi-whatsapp text-success"></i> Teléfono / WhatsApp
+                    </label>
                     <input type="text" 
                            class="form-control @error('telefono') is-invalid @enderror" 
                            id="telefono" 
                            name="telefono" 
-                           value="{{ old('telefono', $barbero->telefono) }}">
+                           value="{{ old('telefono', $barbero->telefono) }}"
+                           placeholder="+57 300 123 4567 o 573001234567">
+                    <small class="form-text text-muted">
+                        <i class="bi bi-info-circle"></i> 
+                        Incluye el código de país para WhatsApp (ej: +57 para Colombia). 
+                        Formatos válidos: <code>+57 300 123 4567</code>, <code>573001234567</code> o <code>300 123 4567</code>
+                    </small>
                     @error('telefono')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
