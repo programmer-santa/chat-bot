@@ -57,7 +57,14 @@ class ClienteController extends Controller
             'servicio_id' => ['required', 'exists:servicios,id'],
             'fecha' => ['required', 'date', 'after_or_equal:today'],
             'hora' => ['required'],
-            'telefono_cliente' => ['nullable', 'string', 'max:20'],
+            'telefono_cliente' => [
+                'nullable', 
+                'string', 
+                'max:20',
+                'regex:/^[\+]?[0-9\s\-\(\)]{10,20}$/', // Acepta números con código de país, espacios, guiones, paréntesis
+            ],
+        ], [
+            'telefono_cliente.regex' => 'El formato del teléfono no es válido. Use: +57 300 123 4567, 573001234567 o 300 123 4567',
         ]);
 
         // Verificar disponibilidad del horario

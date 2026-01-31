@@ -362,11 +362,20 @@
                                            name="telefono_cliente" 
                                            value="{{ old('telefono_cliente') }}"
                                            placeholder="+57 300 123 4567">
-                                    <small class="form-text text-muted">
-                                        Para que el barbero pueda contactarte por WhatsApp
-                                    </small>
+                                    <div class="form-text">
+                                        <small class="text-muted">
+                                            <i class="bi bi-info-circle"></i> 
+                                            <strong>Formato:</strong> Incluye el código de país (+57 para Colombia).<br>
+                                            <strong>Ejemplos válidos:</strong><br>
+                                            • <code>+57 300 123 4567</code> (recomendado)<br>
+                                            • <code>573001234567</code> (sin espacios)<br>
+                                            • <code>300 123 4567</code> (se agregará +57 automáticamente)
+                                        </small>
+                                    </div>
                                     @error('telefono_cliente')
-                                        <div class="invalid-feedback">{{ $message }}</div>
+                                        <div class="invalid-feedback d-block">
+                                            <i class="bi bi-exclamation-triangle"></i> {{ $message }}
+                                        </div>
                                     @enderror
                                 </div>
 
