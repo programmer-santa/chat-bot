@@ -169,14 +169,32 @@
             </div>
         </div>
 
+        <!-- Botón para mostrar formulario -->
+        <div class="row mb-4" id="boton-reservar-container">
+            <div class="col-12 text-center">
+                <button type="button" 
+                        class="btn btn-primary btn-lg" 
+                        id="btn-mostrar-formulario"
+                        onclick="mostrarFormulario()">
+                    <i class="bi bi-calendar-plus"></i> Reservar Turno
+                </button>
+            </div>
+        </div>
+
         <!-- Formulario de Solicitud de Turno -->
-        <div class="row mb-5">
+        <div class="row mb-5" id="formulario-turno-container" style="display: {{ (session('success') || session('error') || $errors->any()) ? 'block' : 'none' }};">
             <div class="col-12">
                 <div class="card shadow">
-                    <div class="card-header bg-primary text-white">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <h3 class="mb-0">
                             <i class="bi bi-calendar-plus"></i> Solicitar Turno
                         </h3>
+                        <button type="button" 
+                                class="btn btn-sm btn-light" 
+                                onclick="ocultarFormulario()"
+                                title="Cerrar formulario">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
                     </div>
                     <div class="card-body">
                         @if(session('success'))
@@ -376,5 +394,48 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript para mostrar/ocultar formulario -->
+    <script>
+        function mostrarFormulario() {
+            const formulario = document.getElementById('formulario-turno-container');
+            const boton = document.getElementById('boton-reservar-container');
+            
+            if (formulario && boton) {
+                formulario.style.display = 'block';
+                boton.style.display = 'none';
+                
+                // Scroll suave al formulario
+                formulario.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+        
+        function ocultarFormulario() {
+            const formulario = document.getElementById('formulario-turno-container');
+            const boton = document.getElementById('boton-reservar-container');
+            
+            if (formulario && boton) {
+                formulario.style.display = 'none';
+                boton.style.display = 'block';
+                
+                // Limpiar formulario si no hay errores
+                const tieneErrores = document.querySelector('.alert-danger');
+                if (!tieneErrores) {
+                    const form = document.querySelector('form[action*="turnos/solicitar"]');
+                    if (form) {
+                        form.reset();
+                    }
+                }
+            }
+        }
+        
+        // Si hay mensajes de éxito, error o errores de validación, mostrar formulario automáticamente
+        document.addEventListener('DOMContentLoaded', function() {
+            const tieneMensajes = document.querySelector('.alert-success, .alert-danger, .alert-info');
+            if (tieneMensajes) {
+                mostrarFormulario();
+            }
+        });
+    </script>
 </body>
 </html>
