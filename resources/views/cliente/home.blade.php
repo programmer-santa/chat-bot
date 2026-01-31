@@ -161,16 +161,42 @@
                                         <td>{{ $turno->hora }}</td>
                                         <td>
                                             @php
-                                                // Número de WhatsApp (configurar según necesidad)
-                                                $whatsappNumber = '1234567890'; // Cambiar por el número real
-                                                $mensaje = "Hola, me interesa el turno del " . $turno->fecha->format('d/m/Y') . " a las " . $turno->hora . " con " . $turno->barbero->nombre . " - Servicio: " . $turno->servicio->nombre;
-                                                $whatsappUrl = "https://wa.me/" . $whatsappNumber . "?text=" . urlencode($mensaje);
+                                                // Obtener número de WhatsApp del barbero
+                                                $whatsappNumber = $turno->barbero->telefono ?? null;
+                                                
+                                                // Limpiar y normalizar el número para WhatsApp
+                                                if ($whatsappNumber) {
+                                                    // Quitar espacios, guiones, paréntesis y el signo +
+                                                    $whatsappNumber = preg_replace('/[^0-9]/', '', $whatsappNumber);
+                                                    
+                                                    // Si el número no empieza con código de país (57 para Colombia), agregarlo
+                                                    // Asumiendo que números de 10 dígitos son colombianos sin código de país
+                                                    if (strlen($whatsappNumber) == 10 && substr($whatsappNumber, 0, 1) == '3') {
+                                                        // Es un número celular colombiano sin código de país
+                                                        $whatsappNumber = '57' . $whatsappNumber;
+                                                    }
+                                                }
+                                                
+                                                // Construir mensaje
+                                                $mensaje = "Hola " . $turno->barbero->nombre . ", me interesa el turno del " . $turno->fecha->format('d/m/Y') . " a las " . $turno->hora . " - Servicio: " . $turno->servicio->nombre;
+                                                
+                                                // URL de WhatsApp (solo si hay número disponible)
+                                                $whatsappUrl = null;
+                                                if ($whatsappNumber && !empty($whatsappNumber)) {
+                                                    $whatsappUrl = "https://wa.me/" . $whatsappNumber . "?text=" . urlencode($mensaje);
+                                                }
                                             @endphp
-                                            <a href="{{ $whatsappUrl }}" 
-                                               class="btn btn-sm btn-success" 
-                                               target="_blank">
-                                                <i class="bi bi-whatsapp"></i> Reservar por WhatsApp
-                                            </a>
+                                            @if($whatsappUrl)
+                                                <a href="{{ $whatsappUrl }}" 
+                                                   class="btn btn-sm btn-success" 
+                                                   target="_blank">
+                                                    <i class="bi bi-whatsapp"></i> Reservar por WhatsApp
+                                                </a>
+                                            @else
+                                                <span class="text-muted small">
+                                                    <i class="bi bi-exclamation-triangle"></i> Sin WhatsApp
+                                                </span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
