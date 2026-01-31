@@ -18,15 +18,9 @@
                 <i class="bi bi-scissors"></i> Sistema Barbería
             </a>
             <div class="navbar-nav ms-auto">
-                <div class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-muted" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <small><i class="bi bi-person-circle"></i> Acceso</small>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{{ route('login') }}"><i class="bi bi-person-badge"></i> Ingreso Barbero</a></li>
-                        <li><a class="dropdown-item" href="{{ route('login') }}"><i class="bi bi-shield-check"></i> Ingreso Administrador</a></li>
-                    </ul>
-                </div>
+                <a class="nav-link" href="{{ route('login') }}" title="Iniciar sesión como Barbero o Administrador">
+                    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                </a>
             </div>
         </div>
     </nav>
@@ -39,14 +33,22 @@
                     <i class="bi bi-scissors text-primary"></i> Bienvenido a Nuestra Barbería
                 </h1>
                 <p class="lead text-muted mb-4">Servicios profesionales de barbería con los mejores especialistas</p>
-                <button type="button" 
-                        class="btn btn-primary btn-lg px-5 py-3 mb-3" 
-                        onclick="mostrarFormulario()"
-                        style="font-size: 1.2rem;">
-                    <i class="bi bi-arrow-right-circle"></i> Continuar sin iniciar sesión
-                </button>
+                <div class="d-flex flex-column flex-md-row gap-3 justify-content-center mb-3">
+                    <button type="button" 
+                            class="btn btn-primary btn-lg px-5 py-3" 
+                            onclick="mostrarFormulario()"
+                            style="font-size: 1.2rem;">
+                        <i class="bi bi-arrow-right-circle"></i> Continuar sin iniciar sesión
+                    </button>
+                    <a href="{{ route('login') }}" 
+                       class="btn btn-outline-secondary btn-lg px-5 py-3"
+                       style="font-size: 1.2rem;">
+                        <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                    </a>
+                </div>
                 <p class="text-muted small">
-                    Reserva tu turno de forma rápida y sencilla
+                    Reserva tu turno de forma rápida y sencilla | 
+                    <a href="{{ route('login') }}" class="text-decoration-none">Acceso para Barberos y Administradores</a>
                 </p>
             </div>
         </div>
@@ -131,9 +133,13 @@
         <!-- Turnos Disponibles -->
         <div class="row mb-5">
             <div class="col-12">
-                <h2 class="mb-4">
-                    <i class="bi bi-calendar-check"></i> Turnos Disponibles
+                <h2 class="mb-2">
+                    <i class="bi bi-calendar-check"></i> Turnos pendientes de confirmación
                 </h2>
+                <p class="text-muted mb-4">
+                    Tu solicitud está en espera de aprobación por el barbero. 
+                    La confirmación o rechazo se realizará por WhatsApp.
+                </p>
                 @if($turnosDisponibles->count() > 0)
                     <div class="table-responsive">
                         <table class="table table-hover">
@@ -218,27 +224,45 @@
                             @if(session('turno_creado'))
                                 @php
                                     $turno = session('turno_creado');
-                                    // Número de WhatsApp de la barbería (configurar según necesidad)
-                                    $whatsappNumber = '1234567890'; // Cambiar por el número real (formato: código país + número sin espacios ni guiones)
+                                    
+                                    // Obtener número de WhatsApp del barbero
+                                    $whatsappNumber = $turno['barbero_telefono'] ?? null;
+                                    
+                                    // Limpiar y normalizar el número para WhatsApp
+                                    if ($whatsappNumber) {
+                                        // Quitar espacios, guiones, paréntesis y el signo +
+                                        $whatsappNumber = preg_replace('/[^0-9]/', '', $whatsappNumber);
+                                        
+                                        // Si el número no empieza con código de país (57 para Colombia), agregarlo
+                                        // Asumiendo que números de 10 dígitos son colombianos sin código de país
+                                        if (strlen($whatsappNumber) == 10 && substr($whatsappNumber, 0, 1) == '3') {
+                                            // Es un número celular colombiano sin código de país
+                                            $whatsappNumber = '57' . $whatsappNumber;
+                                        }
+                                        // Si tiene menos de 10 dígitos o más de 15, puede estar mal formateado
+                                        // Pero lo dejamos pasar para que WhatsApp lo valide
+                                    }
                                     
                                     // Construir mensaje
-                                    $mensaje = "Hola, solicité un turno con la siguiente información:\n\n";
+                                    $mensaje = "Hola " . $turno['barbero'] . ", solicité un turno con la siguiente información:\n\n";
                                     $mensaje .= "👤 Cliente: " . $turno['nombre_cliente'] . "\n";
-                                    $mensaje .= "💇 Barbero: " . $turno['barbero'] . "\n";
                                     $mensaje .= "✂️ Servicio: " . $turno['servicio'] . "\n";
                                     $mensaje .= "📅 Fecha: " . date('d/m/Y', strtotime($turno['fecha'])) . "\n";
                                     $mensaje .= "🕐 Hora: " . $turno['hora'] . "\n\n";
                                     $mensaje .= "Por favor, confírmame si está disponible.";
                                     
-                                    // URL de WhatsApp
-                                    $whatsappUrl = "https://wa.me/" . $whatsappNumber . "?text=" . urlencode($mensaje);
+                                    // URL de WhatsApp (solo si hay número disponible)
+                                    $whatsappUrl = null;
+                                    if ($whatsappNumber && !empty($whatsappNumber)) {
+                                        $whatsappUrl = "https://wa.me/" . $whatsappNumber . "?text=" . urlencode($mensaje);
+                                    }
                                 @endphp
                                 
                                 <div class="alert alert-info mt-3">
                                     <h5 class="alert-heading">
                                         <i class="bi bi-whatsapp"></i> ¿Deseas enviar la información por WhatsApp?
                                     </h5>
-                                    <p class="mb-3">Puedes enviar los detalles de tu turno directamente a la barbería:</p>
+                                    <p class="mb-3">Puedes enviar los detalles de tu turno directamente al barbero <strong>{{ $turno['barbero'] }}</strong>:</p>
                                     <div class="mb-2">
                                         <strong>Cliente:</strong> {{ $turno['nombre_cliente'] }}<br>
                                         <strong>Barbero:</strong> {{ $turno['barbero'] }}<br>
@@ -246,11 +270,19 @@
                                         <strong>Fecha:</strong> {{ date('d/m/Y', strtotime($turno['fecha'])) }}<br>
                                         <strong>Hora:</strong> {{ $turno['hora'] }}
                                     </div>
-                                    <a href="{{ $whatsappUrl }}" 
-                                       class="btn btn-success btn-lg" 
-                                       target="_blank">
-                                        <i class="bi bi-whatsapp"></i> Enviar por WhatsApp
-                                    </a>
+                                    @if($whatsappUrl)
+                                        <a href="{{ $whatsappUrl }}" 
+                                           class="btn btn-success btn-lg" 
+                                           target="_blank">
+                                            <i class="bi bi-whatsapp"></i> Enviar por WhatsApp a {{ $turno['barbero'] }}
+                                        </a>
+                                    @else
+                                        <div class="alert alert-warning mb-0">
+                                            <i class="bi bi-exclamation-triangle"></i> 
+                                            El barbero no tiene número de WhatsApp configurado. 
+                                            Por favor, contacta directamente con la barbería.
+                                        </div>
+                                    @endif
                                 </div>
                             @endif
                         @endif

@@ -95,6 +95,7 @@ class ClienteController extends Controller
         $request->session()->put('turno_creado', [
             'nombre_cliente' => $validated['nombre_cliente'],
             'barbero' => $barbero->nombre,
+            'barbero_telefono' => $barbero->telefono, // Teléfono del barbero para WhatsApp
             'servicio' => $servicio->nombre,
             'fecha' => $validated['fecha'],
             'hora' => $validated['hora'],
