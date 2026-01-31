@@ -119,7 +119,76 @@
                                                         </form>
                                                     </div>
                                                 @else
-                                                    <span class="text-muted">-</span>
+                                                    @php
+                                                        // Extraer teléfono del cliente desde observaciones
+                                                        $telefonoCliente = null;
+                                                        $nombreCliente = 'Cliente';
+                                                        
+                                                        if ($turno->user) {
+                                                            $nombreCliente = $turno->user->name;
+                                                        } else {
+                                                            // Extraer nombre y teléfono desde observaciones
+                                                            $observaciones = $turno->observaciones ?? '';
+                                                            if (strpos($observaciones, 'Cliente: ') === 0) {
+                                                                $lineas = explode("\n", $observaciones);
+                                                                $nombreCliente = str_replace('Cliente: ', '', $lineas[0]);
+                                                                
+                                                                // Buscar teléfono en observaciones
+                                                                foreach ($lineas as $linea) {
+                                                                    if (strpos($linea, 'Teléfono: ') !== false) {
+                                                                        $telefonoCliente = trim(str_replace('Teléfono: ', '', $linea));
+                                                                        break;
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        
+                                                        // Limpiar y normalizar el número para WhatsApp
+                                                        if ($telefonoCliente) {
+                                                            $telefonoCliente = preg_replace('/[^0-9]/', '', $telefonoCliente);
+                                                            // Si el número no empieza con código de país (57 para Colombia), agregarlo
+                                                            if (strlen($telefonoCliente) == 10 && substr($telefonoCliente, 0, 1) == '3') {
+                                                                $telefonoCliente = '57' . $telefonoCliente;
+                                                            }
+                                                        }
+                                                        
+                                                        // Construir mensaje según el estado
+                                                        if ($turno->estado === 'aceptado') {
+                                                            $mensaje = "Hola " . $nombreCliente . ", confirmo tu turno:\n\n";
+                                                            $mensaje .= "✅ Turno ACEPTADO\n\n";
+                                                            $mensaje .= "📅 Fecha: " . $turno->fecha->format('d/m/Y') . "\n";
+                                                            $mensaje .= "🕐 Hora: " . $turno->hora . "\n";
+                                                            $mensaje .= "✂️ Servicio: " . $turno->servicio->nombre . "\n";
+                                                            $mensaje .= "💇 Barbero: " . $barbero->nombre . "\n\n";
+                                                            $mensaje .= "¡Te esperamos!";
+                                                        } else {
+                                                            $mensaje = "Hola " . $nombreCliente . ", lamento informarte que:\n\n";
+                                                            $mensaje .= "❌ Tu turno ha sido RECHAZADO\n\n";
+                                                            $mensaje .= "📅 Fecha solicitada: " . $turno->fecha->format('d/m/Y') . "\n";
+                                                            $mensaje .= "🕐 Hora solicitada: " . $turno->hora . "\n";
+                                                            $mensaje .= "✂️ Servicio: " . $turno->servicio->nombre . "\n\n";
+                                                            $mensaje .= "Por favor, contáctame para proponerte otra fecha y hora disponible.";
+                                                        }
+                                                        
+                                                        // URL de WhatsApp (solo si hay teléfono disponible)
+                                                        $whatsappUrl = null;
+                                                        if ($telefonoCliente && !empty($telefonoCliente)) {
+                                                            $whatsappUrl = "https://wa.me/" . $telefonoCliente . "?text=" . urlencode($mensaje);
+                                                        }
+                                                    @endphp
+                                                    
+                                                    @if($whatsappUrl)
+                                                        <a href="{{ $whatsappUrl }}" 
+                                                           class="btn btn-sm btn-success" 
+                                                           target="_blank"
+                                                           title="Contactar cliente por WhatsApp">
+                                                            <i class="bi bi-whatsapp"></i> Contactar por WhatsApp
+                                                        </a>
+                                                    @else
+                                                        <span class="text-muted small" title="Cliente no tiene teléfono registrado">
+                                                            <i class="bi bi-exclamation-circle"></i> Sin teléfono
+                                                        </span>
+                                                    @endif
                                                 @endif
                                             </td>
                                         </tr>

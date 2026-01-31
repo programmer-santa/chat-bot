@@ -57,6 +57,7 @@ class ClienteController extends Controller
             'servicio_id' => ['required', 'exists:servicios,id'],
             'fecha' => ['required', 'date', 'after_or_equal:today'],
             'hora' => ['required'],
+            'telefono_cliente' => ['nullable', 'string', 'max:20'],
         ]);
 
         // Verificar disponibilidad del horario
@@ -73,8 +74,11 @@ class ClienteController extends Controller
                 ->with('error', 'El horario seleccionado no está disponible. Por favor elige otro.');
         }
 
-        // Preparar observaciones con el nombre del cliente
+        // Preparar observaciones con el nombre y teléfono del cliente
         $observaciones = 'Cliente: ' . $validated['nombre_cliente'];
+        if (!empty($validated['telefono_cliente'])) {
+            $observaciones .= "\nTeléfono: " . $validated['telefono_cliente'];
+        }
 
         // Obtener información del barbero y servicio para el mensaje de WhatsApp
         $barbero = Barbero::findOrFail($validated['barbero_id']);

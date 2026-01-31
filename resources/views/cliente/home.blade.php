@@ -353,6 +353,24 @@
                                 </div>
 
                                 <div class="col-md-6 mb-3">
+                                    <label for="telefono_cliente" class="form-label">
+                                        <i class="bi bi-whatsapp text-success"></i> Teléfono / WhatsApp (opcional)
+                                    </label>
+                                    <input type="text" 
+                                           class="form-control @error('telefono_cliente') is-invalid @enderror" 
+                                           id="telefono_cliente" 
+                                           name="telefono_cliente" 
+                                           value="{{ old('telefono_cliente') }}"
+                                           placeholder="+57 300 123 4567">
+                                    <small class="form-text text-muted">
+                                        Para que el barbero pueda contactarte por WhatsApp
+                                    </small>
+                                    @error('telefono_cliente')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="col-md-6 mb-3">
                                     <label for="barbero_id" class="form-label">
                                         <i class="bi bi-person-badge"></i> Seleccionar Barbero *
                                     </label>
