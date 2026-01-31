@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BarberoController;
 use App\Http\Controllers\BarberoPanelController;
+use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ServicioController;
 use App\Http\Controllers\TurnoController;
 use Illuminate\Support\Facades\Route;
@@ -19,10 +20,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Ruta raíz: redirigir al formulario de turnos
-Route::get('/', function () {
-    return redirect()->route('turnos.crear');
-});
+// Ruta raíz: Página pública del cliente
+Route::get('/', [ClienteController::class, 'home'])->name('cliente.home');
 
 // Rutas públicas - Agendamiento de turnos
 Route::get('/turnos/crear', [TurnoController::class, 'crearPublico'])->name('turnos.crear');
