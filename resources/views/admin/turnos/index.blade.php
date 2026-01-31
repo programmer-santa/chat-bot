@@ -30,7 +30,13 @@
                         @foreach($turnos as $turno)
                             <tr>
                                 <td>{{ $turno->id }}</td>
-                                <td>{{ $turno->user->name }}</td>
+                                <td>
+                                    @if($turno->user)
+                                        {{ $turno->user->name }}
+                                    @else
+                                        {{ Str::after($turno->observaciones ?? '', 'Cliente: ') ?: 'Cliente público' }}
+                                    @endif
+                                </td>
                                 <td>{{ $turno->barbero->nombre }}</td>
                                 <td>{{ $turno->servicio->nombre }}</td>
                                 <td>{{ $turno->fecha->format('d/m/Y') }}</td>

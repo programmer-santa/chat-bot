@@ -19,10 +19,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Ruta raíz: redirigir al login
+// Ruta raíz: redirigir al formulario de turnos
 Route::get('/', function () {
-    return redirect()->route('login');
+    return redirect()->route('turnos.crear');
 });
+
+// Rutas públicas - Agendamiento de turnos
+Route::get('/turnos/crear', [TurnoController::class, 'crearPublico'])->name('turnos.crear');
+Route::post('/turnos', [TurnoController::class, 'guardarPublico'])->name('turnos.guardar');
 
 // Rutas de autenticación
 Route::middleware('guest')->group(function () {

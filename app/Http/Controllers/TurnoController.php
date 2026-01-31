@@ -16,11 +16,12 @@ use Illuminate\Http\Request;
 class TurnoController extends Controller
 {
     /**
-     * Constructor: Aplicar middleware de autenticación
+     * Constructor: Aplicar middleware de autenticación solo a métodos protegidos
      */
     public function __construct()
     {
-        $this->middleware(['auth']);
+        // Solo aplicar middleware a métodos que requieren autenticación
+        $this->middleware(['auth'])->except(['crearPublico', 'guardarPublico']);
     }
 
     /**
@@ -191,5 +192,69 @@ class TurnoController extends Controller
 
         return redirect()->route('admin.turnos.index')
             ->with('success', $mensaje);
+    }
+
+    /**
+     * Mostrar formulario público para crear turno
+     * 
+     * Ruta pública para que los clientes puedan agendar turnos
+     */
+    public function crearPublico()
+    {
+        $barberos = Barbero::where('activo', true)->get();
+        $servicios = Servicio::where('activo', true)->get();
+
+        return view('turnos.crear', compact('barberos', 'servicios'));
+    }
+
+    /**
+     * Guardar turno desde formulario público
+     * 
+     * Guarda turno con user_id = null y estado = 'pendiente'
+     */
+    public function guardarPublico(Request $request)
+    {
+        // Validación
+        $validated = $request->validate([
+            'nombre_cliente' => ['required', 'string', 'max:255'],
+            'barbero_id' => ['required', 'exists:barberos,id'],
+            'servicio_id' => ['required', 'exists:servicios,id'],
+            'fecha' => ['required', 'date', 'after_or_equal:today'],
+            'hora' => ['required'],
+            'observaciones' => ['nullable', 'string'],
+        ]);
+
+        // Verificar disponibilidad del barbero
+        $existeTurno = Turno::where('barbero_id', $validated['barbero_id'])
+            ->where('fecha', $validated['fecha'])
+            ->where('hora', $validated['hora'])
+            ->where('estado', '!=', 'rechazado')
+            ->exists();
+
+        if ($existeTurno) {
+            return back()
+                ->withInput()
+                ->with('error', 'El barbero ya tiene un turno en esa fecha y hora. Por favor, selecciona otra fecha u hora.');
+        }
+
+        // Preparar observaciones con el nombre del cliente
+        $observaciones = 'Cliente: ' . $validated['nombre_cliente'];
+        if (!empty($validated['observaciones'])) {
+            $observaciones .= "\n\n" . $validated['observaciones'];
+        }
+
+        // Guardar turno con user_id = null
+        Turno::create([
+            'user_id' => null,
+            'barbero_id' => $validated['barbero_id'],
+            'servicio_id' => $validated['servicio_id'],
+            'fecha' => $validated['fecha'],
+            'hora' => $validated['hora'],
+            'estado' => 'pendiente',
+            'observaciones' => $observaciones,
+        ]);
+
+        return redirect()->route('turnos.crear')
+            ->with('success', '¡Turno agendado exitosamente! Te contactaremos pronto para confirmar.');
     }
 }

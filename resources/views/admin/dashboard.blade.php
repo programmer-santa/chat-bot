@@ -50,7 +50,7 @@
                                 <p class="card-text text-muted">
                                     Administra los servicios ofrecidos
                                 </p>
-                                <a href="#" class="btn btn-success">
+                                <a href="{{ route('admin.servicios.index') }}" class="btn btn-success">
                                     <i class="bi bi-box-arrow-in-right"></i> Acceder
                                 </a>
                             </div>

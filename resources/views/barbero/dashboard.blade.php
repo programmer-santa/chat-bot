@@ -65,7 +65,22 @@
                                 <tbody>
                                     @foreach($turnos as $turno)
                                         <tr>
-                                            <td>{{ $turno->user->name }}</td>
+                                            <td>
+                                                @if($turno->user)
+                                                    {{ $turno->user->name }}
+                                                @else
+                                                    @php
+                                                        // Extraer nombre del cliente desde observaciones
+                                                        $observaciones = $turno->observaciones ?? '';
+                                                        $nombreCliente = 'Cliente público';
+                                                        if (strpos($observaciones, 'Cliente: ') === 0) {
+                                                            $lineas = explode("\n", $observaciones);
+                                                            $nombreCliente = str_replace('Cliente: ', '', $lineas[0]);
+                                                        }
+                                                    @endphp
+                                                    {{ $nombreCliente }}
+                                                @endif
+                                            </td>
                                             <td>{{ $turno->servicio->nombre }}</td>
                                             <td>{{ $turno->fecha->format('d/m/Y') }}</td>
                                             <td>{{ $turno->hora }}</td>
