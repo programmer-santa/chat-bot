@@ -18,9 +18,15 @@
                 <i class="bi bi-scissors"></i> Sistema Barbería
             </a>
             <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{{ route('turnos.crear') }}">
-                    <i class="bi bi-calendar-plus"></i> Agendar Turno
-                </a>
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-muted" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <small><i class="bi bi-person-circle"></i> Acceso</small>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{{ route('login') }}"><i class="bi bi-person-badge"></i> Ingreso Barbero</a></li>
+                        <li><a class="dropdown-item" href="{{ route('login') }}"><i class="bi bi-shield-check"></i> Ingreso Administrador</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
@@ -32,10 +38,16 @@
                 <h1 class="display-4 mb-3">
                     <i class="bi bi-scissors text-primary"></i> Bienvenido a Nuestra Barbería
                 </h1>
-                <p class="lead text-muted">Servicios profesionales de barbería con los mejores especialistas</p>
-                <a href="{{ route('turnos.crear') }}" class="btn btn-primary btn-lg">
-                    <i class="bi bi-calendar-plus"></i> Agendar Turno Ahora
-                </a>
+                <p class="lead text-muted mb-4">Servicios profesionales de barbería con los mejores especialistas</p>
+                <button type="button" 
+                        class="btn btn-primary btn-lg px-5 py-3 mb-3" 
+                        onclick="mostrarFormulario()"
+                        style="font-size: 1.2rem;">
+                    <i class="bi bi-arrow-right-circle"></i> Continuar sin iniciar sesión
+                </button>
+                <p class="text-muted small">
+                    Reserva tu turno de forma rápida y sencilla
+                </p>
             </div>
         </div>
 
@@ -386,9 +398,23 @@
         </div>
     </main>
 
-    <footer class="bg-dark text-white text-center py-4 mt-5">
+    <footer class="bg-dark text-white py-4 mt-5">
         <div class="container">
-            <p class="mb-0">&copy; {{ date('Y') }} Sistema Barbería. Todos los derechos reservados.</p>
+            <div class="row">
+                <div class="col-md-6 text-center text-md-start">
+                    <p class="mb-0">&copy; {{ date('Y') }} Sistema Barbería. Todos los derechos reservados.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <small class="text-muted">
+                        <a href="{{ route('login') }}" class="text-muted text-decoration-none me-3">
+                            <i class="bi bi-person-badge"></i> Barbero
+                        </a>
+                        <a href="{{ route('login') }}" class="text-muted text-decoration-none">
+                            <i class="bi bi-shield-check"></i> Admin
+                        </a>
+                    </small>
+                </div>
+            </div>
         </div>
     </footer>
 

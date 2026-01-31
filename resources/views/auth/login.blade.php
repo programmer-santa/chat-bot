@@ -14,6 +14,14 @@
             <div class="card-body">
                 <h5 class="card-title text-center mb-4">Iniciar Sesión</h5>
                 
+                <div class="text-center mb-3">
+                    <a href="{{ route('cliente.home') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="bi bi-arrow-left"></i> Volver a la página principal
+                    </a>
+                </div>
+                
+                <hr class="my-4">
+                
                 <form method="POST" action="{{ route('login') }}">
                     @csrf
 
@@ -54,12 +62,19 @@
                         </label>
                     </div>
 
-                    <div class="d-grid">
+                    <div class="d-grid mb-3">
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
                         </button>
                     </div>
                 </form>
+                
+                <div class="text-center mt-4">
+                    <p class="text-muted small mb-2">¿Eres cliente?</p>
+                    <a href="{{ route('cliente.home') }}" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-arrow-right-circle"></i> Continuar sin iniciar sesión
+                    </a>
+                </div>
             </div>
         </div>
     </div>
