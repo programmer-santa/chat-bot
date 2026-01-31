@@ -23,6 +23,9 @@ use Illuminate\Support\Facades\Route;
 // Ruta raíz: Página pública del cliente
 Route::get('/', [ClienteController::class, 'home'])->name('cliente.home');
 
+// Ruta para solicitar turno (pública, sin autenticación)
+Route::post('/turnos/solicitar', [ClienteController::class, 'store'])->name('turnos.solicitar');
+
 // Rutas públicas - Agendamiento de turnos
 Route::get('/turnos/crear', [TurnoController::class, 'crearPublico'])->name('turnos.crear');
 Route::post('/turnos', [TurnoController::class, 'guardarPublico'])->name('turnos.guardar');
