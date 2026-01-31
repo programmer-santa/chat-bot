@@ -184,6 +184,45 @@
                                 <i class="bi bi-check-circle"></i> {{ session('success') }}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
+                            
+                            @if(session('turno_creado'))
+                                @php
+                                    $turno = session('turno_creado');
+                                    // Número de WhatsApp de la barbería (configurar según necesidad)
+                                    $whatsappNumber = '1234567890'; // Cambiar por el número real (formato: código país + número sin espacios ni guiones)
+                                    
+                                    // Construir mensaje
+                                    $mensaje = "Hola, solicité un turno con la siguiente información:\n\n";
+                                    $mensaje .= "👤 Cliente: " . $turno['nombre_cliente'] . "\n";
+                                    $mensaje .= "💇 Barbero: " . $turno['barbero'] . "\n";
+                                    $mensaje .= "✂️ Servicio: " . $turno['servicio'] . "\n";
+                                    $mensaje .= "📅 Fecha: " . date('d/m/Y', strtotime($turno['fecha'])) . "\n";
+                                    $mensaje .= "🕐 Hora: " . $turno['hora'] . "\n\n";
+                                    $mensaje .= "Por favor, confírmame si está disponible.";
+                                    
+                                    // URL de WhatsApp
+                                    $whatsappUrl = "https://wa.me/" . $whatsappNumber . "?text=" . urlencode($mensaje);
+                                @endphp
+                                
+                                <div class="alert alert-info mt-3">
+                                    <h5 class="alert-heading">
+                                        <i class="bi bi-whatsapp"></i> ¿Deseas enviar la información por WhatsApp?
+                                    </h5>
+                                    <p class="mb-3">Puedes enviar los detalles de tu turno directamente a la barbería:</p>
+                                    <div class="mb-2">
+                                        <strong>Cliente:</strong> {{ $turno['nombre_cliente'] }}<br>
+                                        <strong>Barbero:</strong> {{ $turno['barbero'] }}<br>
+                                        <strong>Servicio:</strong> {{ $turno['servicio'] }}<br>
+                                        <strong>Fecha:</strong> {{ date('d/m/Y', strtotime($turno['fecha'])) }}<br>
+                                        <strong>Hora:</strong> {{ $turno['hora'] }}
+                                    </div>
+                                    <a href="{{ $whatsappUrl }}" 
+                                       class="btn btn-success btn-lg" 
+                                       target="_blank">
+                                        <i class="bi bi-whatsapp"></i> Enviar por WhatsApp
+                                    </a>
+                                </div>
+                            @endif
                         @endif
 
                         @if(session('error'))

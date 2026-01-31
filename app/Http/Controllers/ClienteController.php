@@ -75,8 +75,12 @@ class ClienteController extends Controller
         // Preparar observaciones con el nombre del cliente
         $observaciones = 'Cliente: ' . $validated['nombre_cliente'];
 
+        // Obtener información del barbero y servicio para el mensaje de WhatsApp
+        $barbero = Barbero::findOrFail($validated['barbero_id']);
+        $servicio = Servicio::findOrFail($validated['servicio_id']);
+
         // Guardar turno con user_id = null
-        Turno::create([
+        $turno = Turno::create([
             'user_id' => null,
             'barbero_id' => $validated['barbero_id'],
             'servicio_id' => $validated['servicio_id'],
@@ -84,6 +88,15 @@ class ClienteController extends Controller
             'hora' => $validated['hora'],
             'estado' => 'pendiente',
             'observaciones' => $observaciones,
+        ]);
+
+        // Guardar información del turno en sesión para mostrar botón de WhatsApp
+        $request->session()->put('turno_creado', [
+            'nombre_cliente' => $validated['nombre_cliente'],
+            'barbero' => $barbero->nombre,
+            'servicio' => $servicio->nombre,
+            'fecha' => $validated['fecha'],
+            'hora' => $validated['hora'],
         ]);
 
         return redirect()->route('cliente.home')
