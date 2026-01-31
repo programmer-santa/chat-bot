@@ -59,6 +59,7 @@
                                         <th>Fecha</th>
                                         <th>Hora</th>
                                         <th>Estado</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -75,6 +76,35 @@
                                                     <span class="badge bg-success">Aceptado</span>
                                                 @else
                                                     <span class="badge bg-danger">Rechazado</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($turno->estado === 'pendiente')
+                                                    <div class="btn-group" role="group">
+                                                        <form action="{{ route('barbero.turnos.aceptar', $turno->id) }}" 
+                                                              method="POST" 
+                                                              class="d-inline">
+                                                            @csrf
+                                                            <button type="submit" 
+                                                                    class="btn btn-sm btn-success" 
+                                                                    title="Aceptar turno">
+                                                                <i class="bi bi-check-circle"></i> Aceptar
+                                                            </button>
+                                                        </form>
+                                                        <form action="{{ route('barbero.turnos.rechazar', $turno->id) }}" 
+                                                              method="POST" 
+                                                              class="d-inline">
+                                                            @csrf
+                                                            <button type="submit" 
+                                                                    class="btn btn-sm btn-danger" 
+                                                                    title="Rechazar turno"
+                                                                    onclick="return confirm('¿Estás seguro de rechazar este turno?');">
+                                                                <i class="bi bi-x-circle"></i> Rechazar
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted">-</span>
                                                 @endif
                                             </td>
                                         </tr>

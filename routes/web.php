@@ -54,4 +54,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 Route::middleware(['auth', 'barbero'])->prefix('barbero')->name('barbero.')->group(function () {
     // Dashboard del barbero
     Route::get('/dashboard', [BarberoPanelController::class, 'dashboard'])->name('dashboard');
+    
+    // Aceptar y rechazar turnos
+    Route::post('/turnos/{turno}/aceptar', [BarberoPanelController::class, 'aceptar'])->name('turnos.aceptar');
+    Route::post('/turnos/{turno}/rechazar', [BarberoPanelController::class, 'rechazar'])->name('turnos.rechazar');
 });
