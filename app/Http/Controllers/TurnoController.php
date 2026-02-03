@@ -201,8 +201,14 @@ class TurnoController extends Controller
      */
     public function crearPublico()
     {
-        $barberos = Barbero::where('activo', true)->get();
-        $servicios = Servicio::where('activo', true)->get();
+        try {
+            $barberos = Barbero::where('activo', true)->get();
+            $servicios = Servicio::where('activo', true)->get();
+        } catch (\Exception $e) {
+            // Si hay error de base de datos, usar valores vacíos
+            $barberos = collect();
+            $servicios = collect();
+        }
 
         return view('turnos.crear', compact('barberos', 'servicios'));
     }

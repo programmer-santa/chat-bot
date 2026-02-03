@@ -21,24 +21,31 @@ class ClienteController extends Controller
      */
     public function home()
     {
-        // Obtener barberos activos
-        $barberos = Barbero::where('activo', true)
-            ->with('user')
-            ->get();
+        try {
+            // Obtener barberos activos
+            $barberos = Barbero::where('activo', true)
+                ->with('user')
+                ->get();
 
-        // Obtener servicios activos
-        $servicios = Servicio::where('activo', true)
-            ->orderBy('precio', 'asc')
-            ->get();
+            // Obtener servicios activos
+            $servicios = Servicio::where('activo', true)
+                ->orderBy('precio', 'asc')
+                ->get();
 
-        // Obtener turnos pendientes (interpretados como "disponibles")
-        $turnosDisponibles = Turno::where('estado', 'pendiente')
-            ->with(['barbero', 'servicio'])
-            ->whereDate('fecha', '>=', now())
-            ->orderBy('fecha', 'asc')
-            ->orderBy('hora', 'asc')
-            ->take(10)
-            ->get();
+            // Obtener turnos pendientes (interpretados como "disponibles")
+            $turnosDisponibles = Turno::where('estado', 'pendiente')
+                ->with(['barbero', 'servicio'])
+                ->whereDate('fecha', '>=', now())
+                ->orderBy('fecha', 'asc')
+                ->orderBy('hora', 'asc')
+                ->take(10)
+                ->get();
+        } catch (\Exception $e) {
+            // Si hay error de base de datos, usar valores vacíos
+            $barberos = collect();
+            $servicios = collect();
+            $turnosDisponibles = collect();
+        }
 
         return view('cliente.home', compact('barberos', 'servicios', 'turnosDisponibles'));
     }
