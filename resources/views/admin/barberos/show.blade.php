@@ -19,9 +19,13 @@
                 <h5 class="mb-0">Información del Usuario</h5>
             </div>
             <div class="card-body">
-                <p><strong>Nombre:</strong> {{ $barbero->user->name }}</p>
-                <p><strong>Email:</strong> {{ $barbero->user->email }}</p>
-                <p><strong>Rol:</strong> <span class="badge bg-info">{{ $barbero->user->role }}</span></p>
+                @if($barbero->user)
+                    <p><strong>Nombre:</strong> {{ $barbero->user->name }}</p>
+                    <p><strong>Email:</strong> {{ $barbero->user->email }}</p>
+                    <p><strong>Rol:</strong> <span class="badge bg-info">{{ $barbero->user->role }}</span></p>
+                @else
+                    <p class="text-muted">No hay información de usuario asociada</p>
+                @endif
             </div>
         </div>
     </div>
@@ -72,10 +76,10 @@
                             <tbody>
                                 @foreach($barbero->turnos as $turno)
                                     <tr>
-                                        <td>{{ $turno->user->name }}</td>
-                                        <td>{{ $turno->servicio->nombre }}</td>
-                                        <td>{{ $turno->fecha->format('d/m/Y') }}</td>
-                                        <td>{{ $turno->hora }}</td>
+                                        <td>{{ $turno->user ? $turno->user->name : 'Cliente Público' }}</td>
+                                        <td>{{ $turno->servicio ? $turno->servicio->nombre : 'N/A' }}</td>
+                                        <td>{{ $turno->fecha ? $turno->fecha->format('d/m/Y') : 'N/A' }}</td>
+                                        <td>{{ $turno->hora ?? 'N/A' }}</td>
                                         <td>
                                             @if($turno->estado === 'pendiente')
                                                 <span class="badge bg-warning">Pendiente</span>

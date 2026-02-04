@@ -81,7 +81,12 @@ class BarberoController extends Controller
      */
     public function show(Barbero $barbero)
     {
-        $barbero->load('user', 'turnos');
+        $barbero->load([
+            'user',
+            'turnos' => function($query) {
+                $query->with(['user', 'servicio'])->latest();
+            }
+        ]);
         return view('admin.barberos.show', compact('barbero'));
     }
 
