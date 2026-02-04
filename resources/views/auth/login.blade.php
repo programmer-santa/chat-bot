@@ -15,7 +15,7 @@
                 <h5 class="card-title text-center mb-4">Iniciar Sesión</h5>
                 
                 <div class="text-center mb-3">
-                    <a href="{{ route('cliente.home') }}" class="btn btn-outline-secondary btn-sm">
+                    <a href="{{ route('cliente.home') }}" class="btn-volver" style="font-size: 0.9rem; padding: 0.4rem 1rem;">
                         <i class="bi bi-arrow-left"></i> Volver a la página principal
                     </a>
                 </div>

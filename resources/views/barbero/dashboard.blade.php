@@ -10,6 +10,43 @@
     </div>
 </div>
 
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle"></i> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    
+    @if(session('turno_whatsapp'))
+        @php
+            $whatsappData = session('turno_whatsapp');
+            $whatsappUrl = $whatsappData['url'] ?? null;
+        @endphp
+        @if($whatsappUrl)
+            <div class="alert alert-info mt-3" role="alert">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div>
+                        <i class="bi bi-whatsapp text-success" style="font-size: 1.5rem;"></i>
+                        <strong>¿Quieres contactar al cliente por WhatsApp?</strong>
+                        <p class="mb-0 mt-2">Envía un mensaje directo al cliente sobre su turno</p>
+                    </div>
+                    <a href="{{ $whatsappUrl }}" 
+                       target="_blank" 
+                       class="btn btn-success btn-lg">
+                        <i class="bi bi-whatsapp"></i> Contactar por WhatsApp
+                    </a>
+                </div>
+            </div>
+        @endif
+    @endif
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle"></i> {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+@endif
+
 @if($barbero)
     <!-- Estadísticas -->
     <div class="row mb-4">
@@ -152,7 +189,7 @@
                                                             }
                                                         }
                                                         
-                                                        // Construir mensaje según el estado
+                                                        // Construir mensaje según el estado (formato original mejorado)
                                                         if ($turno->estado === 'aceptado') {
                                                             $mensaje = "Hola " . $nombreCliente . ", confirmo tu turno:\n\n";
                                                             $mensaje .= "✅ Turno ACEPTADO\n\n";

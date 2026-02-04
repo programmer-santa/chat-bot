@@ -4,9 +4,16 @@
 
 @section('content')
 <div class="row mb-4">
-    <div class="col-12">
-        <h2><i class="bi bi-calendar-check"></i> Listado de Turnos</h2>
-        <p class="text-muted">Visualización de todos los turnos del sistema</p>
+    <div class="col-12 d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ route('admin.dashboard') }}" class="btn-volver">
+                <i class="bi bi-arrow-left"></i> Volver
+            </a>
+            <div>
+                <h2 class="mb-0"><i class="bi bi-calendar-check"></i> Listado de Turnos</h2>
+                <p class="text-muted mb-0">Visualización de todos los turnos del sistema</p>
+            </div>
+        </div>
     </div>
 </div>
 

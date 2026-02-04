@@ -6,7 +6,7 @@
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-between align-items-center">
         <h2><i class="bi bi-person"></i> Detalles del Barbero</h2>
-        <a href="{{ route('admin.barberos.index') }}" class="btn btn-secondary">
+        <a href="{{ route('admin.barberos.index') }}" class="btn-volver">
             <i class="bi bi-arrow-left"></i> Volver
         </a>
     </div>
@@ -22,7 +22,7 @@
                 @if($barbero->user)
                     <p><strong>Nombre:</strong> {{ $barbero->user->name }}</p>
                     <p><strong>Email:</strong> {{ $barbero->user->email }}</p>
-                    <p><strong>Rol:</strong> <span class="badge bg-info">{{ $barbero->user->role }}</span></p>
+                    <p><strong>Rol:</strong> <span class="bunker-badge bunker-badge-success">{{ $barbero->user->role }}</span></p>
                 @else
                     <p class="text-muted">No hay información de usuario asociada</p>
                 @endif

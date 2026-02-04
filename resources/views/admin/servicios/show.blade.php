@@ -6,7 +6,7 @@
 <div class="row mb-4">
     <div class="col-12 d-flex justify-content-between align-items-center">
         <h2><i class="bi bi-list-ul"></i> Detalles del Servicio</h2>
-        <a href="{{ route('admin.servicios.index') }}" class="btn btn-secondary">
+        <a href="{{ route('admin.servicios.index') }}" class="btn-volver">
             <i class="bi bi-arrow-left"></i> Volver
         </a>
     </div>

@@ -88,8 +88,12 @@ class BarberoPanelController extends Controller
         // Cambiar estado a aceptado
         $turno->update(['estado' => 'aceptado']);
 
+        // Preparar información para WhatsApp
+        $whatsappData = $this->prepararWhatsApp($turno, 'aceptado');
+        
         return redirect()->route('barbero.dashboard')
-            ->with('success', 'Turno aceptado exitosamente.');
+            ->with('success', 'Turno aceptado exitosamente.')
+            ->with('turno_whatsapp', $whatsappData);
     }
 
     /**
@@ -121,7 +125,89 @@ class BarberoPanelController extends Controller
         // Cambiar estado a rechazado
         $turno->update(['estado' => 'rechazado']);
 
+        // Preparar información para WhatsApp
+        $whatsappData = $this->prepararWhatsApp($turno, 'rechazado');
+        
         return redirect()->route('barbero.dashboard')
-            ->with('success', 'Turno rechazado exitosamente.');
+            ->with('success', 'Turno rechazado exitosamente.')
+            ->with('turno_whatsapp', $whatsappData);
+    }
+
+    /**
+     * Preparar datos de WhatsApp para el cliente
+     */
+    private function prepararWhatsApp(Turno $turno, string $estado): ?array
+    {
+        // Cargar relaciones necesarias
+        $turno->load(['servicio', 'user']);
+        
+        // Extraer teléfono del cliente
+        $telefonoCliente = null;
+        $nombreCliente = 'Cliente';
+        
+        if ($turno->user) {
+            $nombreCliente = $turno->user->name;
+            // Si el usuario tiene teléfono en algún campo, extraerlo
+            // Por ahora, solo usamos observaciones para clientes públicos
+        } else {
+            // Extraer nombre y teléfono desde observaciones
+            $observaciones = $turno->observaciones ?? '';
+            if (strpos($observaciones, 'Cliente: ') === 0) {
+                $lineas = explode("\n", $observaciones);
+                $nombreCliente = str_replace('Cliente: ', '', $lineas[0]);
+                
+                // Buscar teléfono en observaciones
+                foreach ($lineas as $linea) {
+                    if (strpos($linea, 'Teléfono: ') !== false) {
+                        $telefonoCliente = trim(str_replace('Teléfono: ', '', $linea));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Limpiar y normalizar el número para WhatsApp
+        if ($telefonoCliente) {
+            $telefonoCliente = preg_replace('/[^0-9]/', '', $telefonoCliente);
+            // Si el número no empieza con código de país (57 para Colombia), agregarlo
+            if (strlen($telefonoCliente) == 10 && substr($telefonoCliente, 0, 1) == '3') {
+                $telefonoCliente = '57' . $telefonoCliente;
+            }
+        }
+        
+        // Si no hay teléfono, retornar null
+        if (!$telefonoCliente || empty($telefonoCliente)) {
+            return null;
+        }
+        
+        // Construir mensaje según el estado (formato original mejorado)
+        $barbero = auth()->user()->barbero;
+        if ($estado === 'aceptado') {
+            $mensaje = "Hola " . $nombreCliente . ", confirmo tu turno:\n\n";
+            $mensaje .= "✅ Turno ACEPTADO\n\n";
+            $mensaje .= "📅 Fecha: " . $turno->fecha->format('d/m/Y') . "\n";
+            $mensaje .= "🕐 Hora: " . $turno->hora . "\n";
+            $mensaje .= "✂️ Servicio: " . $turno->servicio->nombre . "\n";
+            if ($barbero) {
+                $mensaje .= "💇 Barbero: " . $barbero->nombre . "\n\n";
+            }
+            $mensaje .= "¡Te esperamos!";
+        } else {
+            $mensaje = "Hola " . $nombreCliente . ", lamento informarte que:\n\n";
+            $mensaje .= "❌ Tu turno ha sido RECHAZADO\n\n";
+            $mensaje .= "📅 Fecha solicitada: " . $turno->fecha->format('d/m/Y') . "\n";
+            $mensaje .= "🕐 Hora solicitada: " . $turno->hora . "\n";
+            $mensaje .= "✂️ Servicio: " . $turno->servicio->nombre . "\n\n";
+            $mensaje .= "Por favor, contáctame para proponerte otra fecha y hora disponible.";
+        }
+        
+        // Crear URL de WhatsApp
+        $whatsappUrl = "https://wa.me/" . $telefonoCliente . "?text=" . urlencode($mensaje);
+        
+        return [
+            'url' => $whatsappUrl,
+            'telefono' => $telefonoCliente,
+            'nombre_cliente' => $nombreCliente,
+        ];
     }
 }

@@ -87,7 +87,7 @@
             </div>
 
             <div class="d-flex justify-content-end gap-2">
-                <a href="{{ route('admin.servicios.index') }}" class="btn btn-secondary">
+                <a href="{{ route('admin.servicios.index') }}" class="btn-volver">
                     <i class="bi bi-arrow-left"></i> Cancelar
                 </a>
                 <button type="submit" class="btn btn-success">
