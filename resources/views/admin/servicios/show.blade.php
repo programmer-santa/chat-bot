@@ -59,8 +59,29 @@
                             <tbody>
                                 @foreach($servicio->turnos as $turno)
                                     <tr>
-                                        <td>{{ $turno->user->name }}</td>
-                                        <td>{{ $turno->barbero->nombre }}</td>
+                                        <td>
+                                            @if($turno->user)
+                                                {{ $turno->user->name }}
+                                            @else
+                                                @php
+                                                    // Extraer nombre del cliente desde observaciones
+                                                    $observaciones = $turno->observaciones ?? '';
+                                                    $nombreCliente = 'Cliente público';
+                                                    if (strpos($observaciones, 'Cliente: ') === 0) {
+                                                        $lineas = explode("\n", $observaciones);
+                                                        $nombreCliente = str_replace('Cliente: ', '', $lineas[0]);
+                                                    }
+                                                @endphp
+                                                {{ $nombreCliente }}
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if($turno->barbero)
+                                                {{ $turno->barbero->nombre }}
+                                            @else
+                                                <span class="text-muted">Sin asignar</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $turno->fecha->format('d/m/Y') }}</td>
                                         <td>
                                             @if($turno->estado === 'pendiente')
